@@ -1,0 +1,7 @@
+# Hugo build output
+blog/public/
+blog/resources/_gen/
+blog/.hugo_build.lock
+
+# Local assembly output
+dist/

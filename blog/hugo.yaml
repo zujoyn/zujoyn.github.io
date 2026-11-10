@@ -1,0 +1,60 @@
+baseURL: "https://zujoyn.github.io/assignment2/"
+locale: "zh-CN"
+defaultContentLanguage: "zh"
+title: "zujoyn 的博客"
+theme: "PaperMod"
+enableRobotsTXT: true
+hasCJKLanguage: true
+pagination:
+  pagerSize: 10
+
+params:
+  env: production
+  author: "zujoyn"
+  description: "记录课程学习、项目实践与随笔"
+  defaultTheme: "auto"
+  ShowReadingTime: true
+  ShowBreadCrumbs: true
+  ShowPostNavLinks: true
+  ShowCodeCopyButtons: true
+  ShowToc: true
+  TocOpen: false
+  ShowShareButtons: false
+  ShowRssButtonInSectionTermList: true
+  homeInfoParams:
+    Title: "你好，我是 zujoyn"
+    Content: "这里是第二次作业：个人博客。记录课程学习、项目实践和一些零散想法。"
+  socialIcons:
+    - name: github
+      url: "https://github.com/zujoyn"
+    - name: home
+      url: "https://zujoyn.github.io/"
+  editPost:
+    URL: "https://github.com/zujoyn/zujoyn.github.io/tree/main/blog/content"
+    Text: "编辑此页"
+    appendFilePath: true
+
+menu:
+  main:
+    - identifier: posts
+      name: 文章
+      url: /posts/
+      weight: 10
+    - identifier: archives
+      name: 归档
+      url: /archives/
+      weight: 20
+    - identifier: tags
+      name: 标签
+      url: /tags/
+      weight: 30
+    - identifier: about
+      name: 关于
+      url: /about/
+      weight: 40
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
