@@ -1,10 +1,17 @@
 ---
 title: "Token 上了李佳琦的直播间"
 date: 2026-11-03T20:00:00+08:00
+lastmod: 2026-11-03
 draft: false
+weight: 1
 tags: ["算力", "Token", "消费"]
 categories: ["商业观察"]
 summary: "一件没有重量、没有保质期、也不能试用的商品，第一次被喊上了链接。"
+note_type: "draft"
+note_project: "公众号"
+note_status: "待发布"
+note_updated: "2026-11-03"
+note_sources: ["raw#90", "raw#86", "raw#74", "raw#21", "raw#85"]
 ShowToc: true
 TocOpen: false
 ---

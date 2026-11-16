@@ -1,0 +1,23 @@
+{{- $hasMeta := or .Params.note_type .Params.note_project .Params.note_status .Params.note_updated .Params.note_sources }}
+{{- if and $hasMeta (not (.Param "hideNote")) }}
+<aside class="note-meta">
+  <div class="note-meta-title">笔记属性</div>
+  <dl>
+    {{- with .Params.note_type }}
+    <dt>类型</dt><dd>{{ . }}</dd>
+    {{- end }}
+    {{- with .Params.note_project }}
+    <dt>项目</dt><dd>{{ . }}</dd>
+    {{- end }}
+    {{- with .Params.note_status }}
+    <dt>状态</dt><dd>{{ . }}</dd>
+    {{- end }}
+    {{- with .Params.note_updated }}
+    <dt>更新</dt><dd>{{ . }}</dd>
+    {{- end }}
+    {{- with .Params.note_sources }}
+    <dt>素材</dt><dd>{{ delimit . " · " }}</dd>
+    {{- end }}
+  </dl>
+</aside>
+{{- end }}
