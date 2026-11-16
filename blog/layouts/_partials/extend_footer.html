@@ -85,7 +85,6 @@
     meteors.push({
       x: rand(W * 0.1, W * 0.9),
       y: rand(0, H * 0.35),
-      len: rand(80, 170),
       vx: rand(-6.5, -3.5),
       vy: rand(2.5, 4.5),
       life: 1
@@ -199,3 +198,307 @@
   start();
 })();
 </script>
+
+{{- if .IsHome }}
+{{- /* 首页开场：每篇文章化作一个泡泡，点破一个后还原成卡片列表 */}}
+<div id="bubble-stage" hidden>
+  <p class="bubble-hint">点破任意一个泡泡</p>
+</div>
+<style>
+  #bubble-stage {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    opacity: 1;
+    pointer-events: none;
+    transition: opacity .5s ease;
+  }
+  #bubble-stage[hidden] { display: none; }
+  #bubble-stage.is-fading { opacity: 0; }
+
+  .bubble {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, .78);
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 32% 28%,
+        rgba(255, 255, 255, .94) 0%,
+        rgba(216, 247, 237, .58) 42%,
+        rgba(150, 222, 200, .34) 72%,
+        rgba(120, 200, 180, .24) 100%);
+    box-shadow:
+      0 12px 32px rgba(18, 86, 72, .16),
+      inset -8px -10px 22px rgba(255, 255, 255, .55),
+      inset 7px 9px 18px rgba(120, 200, 180, .22);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    color: var(--primary);
+    font-size: 13px;
+    line-height: 1.55;
+    text-align: center;
+    cursor: pointer;
+    pointer-events: auto;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    animation: bubble-float var(--dur, 11s) ease-in-out var(--delay, 0s) infinite alternate;
+    transition: filter .25s ease, box-shadow .25s ease;
+  }
+  .bubble:hover {
+    filter: brightness(1.06) saturate(1.08);
+    box-shadow:
+      0 16px 40px rgba(18, 86, 72, .22),
+      inset -8px -10px 22px rgba(255, 255, 255, .6),
+      inset 7px 9px 18px rgba(120, 200, 180, .26);
+  }
+  .bubble span {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    letter-spacing: .02em;
+  }
+
+  :root[data-theme="dark"] .bubble {
+    border-color: rgba(140, 235, 215, .34);
+    background:
+      radial-gradient(circle at 32% 28%,
+        rgba(150, 240, 220, .30) 0%,
+        rgba(48, 120, 104, .34) 55%,
+        rgba(14, 44, 40, .46) 100%);
+    box-shadow:
+      0 12px 32px rgba(0, 0, 0, .35),
+      inset -8px -10px 22px rgba(160, 245, 225, .10),
+      inset 7px 9px 18px rgba(0, 0, 0, .22);
+    color: #ddf6ee;
+  }
+
+  .bubble.is-pop {
+    animation: bubble-pop .42s cubic-bezier(.3, .8, .4, 1) forwards;
+  }
+  @keyframes bubble-pop {
+    0% { transform: scale(1); opacity: 1; }
+    45% { transform: scale(1.16); opacity: .92; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+
+  .bubble-particle {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fff 0%, rgba(178, 236, 216, .85) 55%, rgba(140, 214, 192, .35) 100%);
+    pointer-events: none;
+    transition: transform .6s cubic-bezier(.2, .7, .3, 1), opacity .6s ease;
+  }
+
+  .bubble-hint {
+    position: fixed;
+    left: 50%;
+    bottom: 26px;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 7px 16px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .62);
+    border: 1px solid rgba(255, 255, 255, .8);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    color: var(--secondary);
+    font-size: 12.5px;
+    letter-spacing: .12em;
+    animation: hint-breathe 2.6s ease-in-out infinite;
+  }
+  :root[data-theme="dark"] .bubble-hint {
+    background: rgba(10, 34, 30, .55);
+    border-color: rgba(140, 235, 215, .22);
+  }
+  @keyframes hint-breathe {
+    0%, 100% { opacity: .65; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes bubble-float {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(var(--dx1, 10px), var(--dy1, -12px)); }
+    100% { transform: translate(var(--dx2, -12px), var(--dy2, 8px)); }
+  }
+
+  body.bubbles-lock { overflow: hidden; }
+
+  @media (max-width: 640px) {
+    .bubble { font-size: 11.5px; padding: 12px; }
+    .bubble-hint { bottom: 18px; font-size: 11.5px; }
+  }
+</style>
+<script>
+(function () {
+  var stage = document.getElementById('bubble-stage');
+  if (!stage) return;
+
+  var entries = [].slice.call(document.querySelectorAll('.post-entry'));
+  if (!entries.length) { stage.remove(); return; }
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    stage.remove();
+    return;
+  }
+
+  var items = [];
+  entries.forEach(function (el) {
+    var h = el.querySelector('h2') || el.querySelector('h3');
+    if (!h) return;
+    items.push({ el: el, title: h.textContent.trim() });
+  });
+  if (!items.length) { stage.remove(); return; }
+
+  var vw = window.innerWidth;
+  var vh = window.innerHeight;
+  var placed = [];
+  var done = false;
+
+  items.forEach(function (it) {
+    it.el.style.transition = 'opacity .55s ease, transform .55s cubic-bezier(.2, .7, .3, 1)';
+    it.el.style.opacity = '0';
+    it.el.style.transform = 'translateY(16px)';
+  });
+  document.body.classList.add('bubbles-lock');
+
+  function rand(a, b) { return a + Math.random() * (b - a); }
+
+  function radiusFor(title) {
+    var base = 44 + title.length * 1.55;
+    var max = vw < 640 ? 76 : 102;
+    var min = vw < 640 ? 50 : 58;
+    return Math.max(min, Math.min(max, base));
+  }
+
+  function positionFor(r) {
+    var pad = 18;
+    var topMin = Math.max(vh * 0.30, 120);
+    var topMax = vh - r - 86;
+    var leftMin = pad + r;
+    var leftMax = vw - r - pad;
+    var best = null;
+
+    for (var t = 0; t < 60; t++) {
+      var x = rand(leftMin, Math.max(leftMin, leftMax));
+      var y = rand(topMin, Math.max(topMin, topMax));
+      var ok = true;
+      for (var i = 0; i < placed.length; i++) {
+        var p = placed[i];
+        var dx = p.x - x, dy = p.y - y;
+        var need = (p.r + r) * 0.92;
+        if (dx * dx + dy * dy < need * need) { ok = false; break; }
+      }
+      if (ok) { best = { x: x, y: y, r: r }; break; }
+    }
+    if (!best) {
+      best = {
+        x: rand(leftMin, Math.max(leftMin, leftMax)),
+        y: rand(topMin, Math.max(topMin, topMax)),
+        r: r
+      };
+    }
+    placed.push(best);
+    return best;
+  }
+
+  items.forEach(function (it) {
+    var r = radiusFor(it.title);
+    var pos = positionFor(r);
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'bubble';
+    b.style.width = b.style.height = (r * 2) + 'px';
+    b.style.left = (pos.x - r) + 'px';
+    b.style.top = (pos.y - r) + 'px';
+    b.style.setProperty('--dur', rand(9, 15).toFixed(1) + 's');
+    b.style.setProperty('--delay', rand(0, 4).toFixed(1) + 's');
+    b.style.setProperty('--dx1', rand(6, 18).toFixed(0) + 'px');
+    b.style.setProperty('--dy1', rand(-18, -8).toFixed(0) + 'px');
+    b.style.setProperty('--dx2', rand(-18, -6).toFixed(0) + 'px');
+    b.style.setProperty('--dy2', rand(6, 16).toFixed(0) + 'px');
+
+    var label = document.createElement('span');
+    label.textContent = it.title;
+    b.appendChild(label);
+    b.setAttribute('aria-label', it.title);
+
+    b.addEventListener('click', function () {
+      if (done) return;
+      done = true;
+      burst(pos.x, pos.y, r);
+      b.classList.add('is-pop');
+      setTimeout(revealAll, 380);
+    });
+
+    stage.appendChild(b);
+  });
+
+  stage.hidden = false;
+
+  function burst(cx, cy, r) {
+    var count = 16;
+    for (var i = 0; i < count; i++) {
+      var dot = document.createElement('div');
+      dot.className = 'bubble-particle';
+      var size = rand(4, 10);
+      dot.style.width = dot.style.height = size + 'px';
+      dot.style.left = (cx - size / 2) + 'px';
+      dot.style.top = (cy - size / 2) + 'px';
+      stage.appendChild(dot);
+
+      var angle = (Math.PI * 2 / count) * i + rand(-0.25, 0.25);
+      var dist = r * rand(0.85, 1.5);
+      var tx = Math.cos(angle) * dist;
+      var ty = Math.sin(angle) * dist;
+
+      (function (dot, tx, ty) {
+        requestAnimationFrame(function () {
+          dot.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(.35)';
+          dot.style.opacity = '0';
+        });
+        setTimeout(function () { dot.remove(); }, 700);
+      })(dot, tx, ty);
+    }
+  }
+
+  function revealAll() {
+    stage.classList.add('is-fading');
+    document.body.classList.remove('bubbles-lock');
+
+    items.forEach(function (it, i) {
+      it.el.style.transitionDelay = (i * 75) + 'ms';
+      it.el.style.opacity = '1';
+      it.el.style.transform = 'none';
+      setTimeout(function () {
+        it.el.style.transition = '';
+        it.el.style.transitionDelay = '';
+        it.el.style.opacity = '';
+        it.el.style.transform = '';
+      }, 900 + i * 75);
+    });
+
+    setTimeout(function () { stage.remove(); }, 620);
+  }
+
+  window.addEventListener('resize', function () {
+    clearTimeout(window.__bubbleT);
+    window.__bubbleT = setTimeout(function () {
+      if (done) return;
+      vw = window.innerWidth;
+      vh = window.innerHeight;
+      placed = [];
+      [].slice.call(stage.querySelectorAll('.bubble')).forEach(function (b, i) {
+        var r = parseFloat(b.style.width) / 2;
+        var pos = positionFor(r);
+        b.style.left = (pos.x - r) + 'px';
+        b.style.top = (pos.y - r) + 'px';
+      });
+    }, 200);
+  });
+})();
+</script>
+{{- end }}
