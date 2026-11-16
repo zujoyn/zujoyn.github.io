@@ -312,6 +312,18 @@
     text-shadow: 0 1px 8px rgba(0, 0, 0, .55);
   }
 
+  .bubble.is-deco {
+    pointer-events: none;
+    cursor: default;
+    padding: 0;
+    border-color: rgba(255, 255, 255, .45);
+    opacity: .75;
+  }
+  :root[data-theme="dark"] .bubble.is-deco {
+    border-color: rgba(150, 235, 225, .26);
+    opacity: .65;
+  }
+
   .bubble-particle {
     position: absolute;
     border-radius: 50%;
@@ -399,24 +411,27 @@
   }
 
   function startPosition(r) {
-    var pad = 16;
+    var xMin = Math.max(r + 14, vw * 0.07);
+    var xMax = Math.min(vw - r - 14, vw * 0.93);
+    var yMin = Math.max(r + 70, vh * 0.26);
+    var yMax = vh - r - 64;
     var best = null;
-    for (var t = 0; t < 60; t++) {
-      var x = rand(pad + r, Math.max(pad + r, vw - r - pad));
-      var y = rand(r + 80, Math.max(r + 80, vh - r - 60));
+    for (var t = 0; t < 70; t++) {
+      var x = rand(xMin, Math.max(xMin, xMax));
+      var y = rand(yMin, Math.max(yMin, yMax));
       var ok = true;
       for (var i = 0; i < placed.length; i++) {
         var p = placed[i];
         var dx = p.x - x, dy = p.y - y;
-        var need = (p.r + r) * 0.9;
+        var need = (p.r + r) * 0.72;
         if (dx * dx + dy * dy < need * need) { ok = false; break; }
       }
       if (ok) { best = { x: x, y: y }; break; }
     }
     if (!best) {
       best = {
-        x: rand(pad + r, Math.max(pad + r, vw - r - pad)),
-        y: rand(r + 80, Math.max(r + 80, vh - r - 60))
+        x: rand(xMin, Math.max(xMin, xMax)),
+        y: rand(yMin, Math.max(yMin, yMax))
       };
     }
     placed.push({ x: best.x, y: best.y, r: r });
@@ -462,6 +477,30 @@
 
     stage.appendChild(b);
   });
+
+  /* 装饰气泡：无文字、不可点击，只负责填充画面层次 */
+  var decoCount = Math.max(8, Math.round(items.length * 2.4));
+  for (var d = 0; d < decoCount; d++) {
+    var dr = rand(7, 24);
+    var dx0 = rand(dr + 10, Math.max(dr + 10, vw - dr - 10));
+    var dy0 = rand(dr + 60, Math.max(dr + 60, vh - dr - 40));
+    var db = document.createElement('div');
+    db.className = 'bubble is-deco';
+    db.setAttribute('aria-hidden', 'true');
+    db.style.width = db.style.height = (dr * 2) + 'px';
+    db.style.transform = 'translate(' + (dx0 - dr) + 'px,' + (dy0 - dr) + 'px)';
+    stage.appendChild(db);
+    bubbles.push({
+      el: db,
+      r: dr,
+      x: dx0,
+      y: dy0,
+      vy: rand(16, 34),
+      swayAmp: rand(3, 10),
+      swayFreq: rand(0.4, 1),
+      phase: rand(0, Math.PI * 2)
+    });
+  }
 
   stage.hidden = false;
 
