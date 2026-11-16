@@ -39,7 +39,7 @@
 body {
     background-color: #eaf6f2;
     background-image:
-        linear-gradient(rgba(250, 253, 252, 0.86), rgba(240, 250, 246, 0.92)),
+        linear-gradient(rgba(250, 253, 252, 0.78), rgba(240, 250, 246, 0.84)),
         url("/assignment2/images/bg-water.jpg");
     background-size: cover, cover;
     background-position: center, center;
@@ -50,8 +50,14 @@ body {
 :root[data-theme="dark"] body {
     background-color: #081917;
     background-image:
-        linear-gradient(rgba(7, 22, 20, 0.90), rgba(6, 20, 18, 0.94)),
+        linear-gradient(rgba(7, 22, 20, 0.84), rgba(6, 20, 18, 0.88)),
         url("/assignment2/images/bg-water.jpg");
+}
+
+/* 主题默认给 .list 铺了不透明底色，会盖掉背景图，这里放空 */
+.list,
+:root[data-theme="dark"] .list {
+    background: transparent;
 }
 
 /* 顶栏与底部做成半透明，让背景透出来 */
