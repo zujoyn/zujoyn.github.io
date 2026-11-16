@@ -35,9 +35,9 @@
     color-scheme: dark;
 }
 
-/* ---------- 背景：全站统一使用水光插画（左下角小猫与白云、右下角草地） ---------- */
-body,
-body.list {
+/* ---------- 背景：全站统一使用水光插画（左下角小猫与白云、右下角草地） ----------
+   背景挂在 html 上、body 透明，这样 canvas 特效（z-index:-1）才能落在背景之上、内容之下 */
+html {
     background-color: #eef9f4;
     background-image:
         linear-gradient(rgba(255, 255, 255, 0.24), rgba(247, 253, 250, 0.32)),
@@ -48,8 +48,7 @@ body.list {
     background-attachment: fixed, fixed;
 }
 
-:root[data-theme="dark"] body,
-:root[data-theme="dark"] body.list {
+:root[data-theme="dark"] {
     background-color: #081917;
     background-image:
         linear-gradient(rgba(8, 24, 22, 0.58), rgba(6, 20, 18, 0.70)),
@@ -58,6 +57,11 @@ body.list {
     background-position: center center, center bottom;
     background-repeat: no-repeat, no-repeat;
     background-attachment: fixed, fixed;
+}
+
+body,
+body.list {
+    background: transparent;
 }
 
 /* 主题默认给 .list 铺了不透明底色，会盖掉背景图，这里放空 */
@@ -254,10 +258,8 @@ body,
 
 /* ---------- 移动端：固定背景在 iOS 上会抖，改为滚动 ---------- */
 @media (max-width: 768px) {
-    body,
-    body.list,
-    :root[data-theme="dark"] body,
-    :root[data-theme="dark"] body.list {
+    html,
+    :root[data-theme="dark"] {
         background-size: cover, 100% auto;
         background-attachment: scroll, scroll;
         background-position: center top, center bottom;
