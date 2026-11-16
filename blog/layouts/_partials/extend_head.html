@@ -30,3 +30,34 @@
     word-break: break-word;
   }
 </style>
+
+{{- /* 首页专用背景：水光潋滟插画（左下角小猫与白云、右下角草地） */}}
+{{- if .IsHome }}
+<style>
+  body {
+    background-color: #eef9f4;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.50), rgba(247, 253, 250, 0.58)),
+      url("/assignment2/images/bg-home.jpg");
+    background-size: cover, cover;
+    background-position: center center, center bottom;
+    background-repeat: no-repeat, no-repeat;
+    background-attachment: fixed, fixed;
+  }
+
+  :root[data-theme="dark"] body {
+    background-color: #081917;
+    background-image:
+      linear-gradient(rgba(8, 24, 22, 0.76), rgba(6, 20, 18, 0.84)),
+      url("/assignment2/images/bg-home.jpg");
+  }
+
+  @media (max-width: 768px) {
+    body {
+      background-size: cover, 100% auto;
+      background-position: center top, center bottom;
+      background-attachment: scroll, scroll;
+    }
+  }
+</style>
+{{- end }}
