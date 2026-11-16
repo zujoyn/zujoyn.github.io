@@ -54,6 +54,10 @@ body.list {
     background-image:
         linear-gradient(rgba(8, 24, 22, 0.58), rgba(6, 20, 18, 0.70)),
         url("/assignment2/images/bg-home.jpg");
+    background-size: cover, cover;
+    background-position: center center, center bottom;
+    background-repeat: no-repeat, no-repeat;
+    background-attachment: fixed, fixed;
 }
 
 /* 主题默认给 .list 铺了不透明底色，会盖掉背景图，这里放空 */
@@ -251,7 +255,9 @@ body,
 /* ---------- 移动端：固定背景在 iOS 上会抖，改为滚动 ---------- */
 @media (max-width: 768px) {
     body,
-    body.list {
+    body.list,
+    :root[data-theme="dark"] body,
+    :root[data-theme="dark"] body.list {
         background-size: cover, 100% auto;
         background-attachment: scroll, scroll;
         background-position: center top, center bottom;
