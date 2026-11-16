@@ -1,0 +1,263 @@
+/* ===========================================================
+   水光潋滟主题：取色自背景图（湖水青绿 / 深林墨绿 / 阳光嫩绿）
+   背景图路径固定为 /assignment2/images/bg-water.jpg
+   =========================================================== */
+
+:root {
+    --gap: 24px;
+    --content-gap: 24px;
+    --nav-width: 900px;
+    --main-width: 760px;
+    --radius: 14px;
+
+    --theme: #f5fbf9;
+    --entry: rgba(255, 255, 255, 0.80);
+    --primary: #103c36;
+    --secondary: #4a6d66;
+    --tertiary: #1c8b78;
+    --content: #1b3833;
+    --code-block-bg: #13322c;
+    --code-bg: rgba(255, 255, 255, 0.70);
+    --border: rgba(28, 139, 120, 0.16);
+    color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+    --theme: #0b1c1a;
+    --entry: rgba(14, 38, 34, 0.86);
+    --primary: #e8f6f1;
+    --secondary: #a9c9c2;
+    --tertiary: #5fd3b8;
+    --content: #d9e9e5;
+    --code-block-bg: #08211d;
+    --code-bg: rgba(10, 32, 29, 0.78);
+    --border: rgba(95, 211, 184, 0.18);
+    color-scheme: dark;
+}
+
+/* ---------- 背景 ---------- */
+body {
+    background-color: #eaf6f2;
+    background-image:
+        linear-gradient(rgba(250, 253, 252, 0.86), rgba(240, 250, 246, 0.92)),
+        url("/assignment2/images/bg-water.jpg");
+    background-size: cover, cover;
+    background-position: center, center;
+    background-repeat: no-repeat, no-repeat;
+    background-attachment: fixed, fixed;
+}
+
+:root[data-theme="dark"] body {
+    background-color: #081917;
+    background-image:
+        linear-gradient(rgba(7, 22, 20, 0.90), rgba(6, 20, 18, 0.94)),
+        url("/assignment2/images/bg-water.jpg");
+}
+
+/* 顶栏与底部做成半透明，让背景透出来 */
+.header {
+    background: rgba(255, 255, 255, 0.62);
+    backdrop-filter: blur(14px) saturate(120%);
+    -webkit-backdrop-filter: blur(14px) saturate(120%);
+    border-bottom: 1px solid var(--border);
+}
+
+:root[data-theme="dark"] .header {
+    background: rgba(8, 24, 22, 0.72);
+}
+
+.footer {
+    background: transparent;
+    color: var(--secondary);
+}
+
+/* ---------- 字体与字间距 ---------- */
+body,
+.post-content,
+.post-entry,
+.entry-content,
+.post-meta,
+.nav a,
+.menu a {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+        "Microsoft YaHei", "Noto Sans SC", "Segoe UI", sans-serif;
+    letter-spacing: 0.015em;
+}
+
+.post-title,
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-content h4,
+.home-info .entry-header h1 {
+    font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", Georgia, serif;
+    letter-spacing: 0.035em;
+}
+
+.post-content {
+    font-size: 17px;
+    line-height: 1.95;
+}
+
+.post-content p {
+    margin: 0 0 1.35em;
+}
+
+.post-content h2 {
+    margin-top: 2.4em;
+    margin-bottom: 0.9em;
+    font-size: 1.32em;
+}
+
+.post-content h3 {
+    margin-top: 2em;
+    font-size: 1.12em;
+}
+
+.post-title {
+    line-height: 1.45;
+    font-size: 2em;
+}
+
+/* 正文段落稍微放宽两端对齐后的呼吸感 */
+.post-content blockquote {
+    border-inline-start: 3px solid var(--tertiary);
+    background: rgba(255, 255, 255, 0.55);
+    border-radius: 0 8px 8px 0;
+    padding: 0.6em 1.1em;
+    color: var(--secondary);
+}
+
+:root[data-theme="dark"] .post-content blockquote {
+    background: rgba(12, 34, 31, 0.55);
+}
+
+/* ---------- 内容容器：半透明玻璃卡片，保证不被背景干扰 ---------- */
+.post-single {
+    background: var(--entry);
+    backdrop-filter: blur(12px) saturate(118%);
+    -webkit-backdrop-filter: blur(12px) saturate(118%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 30px 34px 34px;
+    box-shadow: 0 8px 34px rgba(16, 60, 54, 0.07);
+}
+
+.first-entry,
+.post-entry {
+    background: var(--entry);
+    backdrop-filter: blur(12px) saturate(118%);
+    -webkit-backdrop-filter: blur(12px) saturate(118%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.first-entry {
+    padding: 26px 28px;
+    box-shadow: 0 8px 34px rgba(16, 60, 54, 0.07);
+}
+
+.post-entry {
+    padding: 20px 22px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.post-entry:hover {
+    transform: translateY(-2px);
+    border-color: rgba(28, 139, 120, 0.34);
+    box-shadow: 0 12px 30px rgba(16, 60, 54, 0.11);
+}
+
+/* 文章页标签、目录、笔记属性块 */
+.post-tags a,
+.terms-tags a {
+    background: rgba(28, 139, 120, 0.10);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px 12px;
+    color: var(--tertiary);
+}
+
+.post-tags a:hover {
+    background: rgba(28, 139, 120, 0.20);
+}
+
+.toc {
+    background: rgba(255, 255, 255, 0.62);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+:root[data-theme="dark"] .toc {
+    background: rgba(10, 30, 28, 0.60);
+}
+
+.note-meta {
+    background: rgba(255, 255, 255, 0.66) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+:root[data-theme="dark"] .note-meta {
+    background: rgba(10, 30, 28, 0.66) !important;
+}
+
+/* ---------- 首页标题渐变 ---------- */
+.home-info .entry-header h1 {
+    background-image: linear-gradient(96deg, #0b6b5f 0%, #1c9c85 32%, #4fa96b 64%, #8bbf52 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding-bottom: 0.08em;
+}
+
+:root[data-theme="dark"] .home-info .entry-header h1 {
+    background-image: linear-gradient(96deg, #6fe0c6 0%, #8fe0a6 45%, #cfe98a 100%);
+}
+
+/* 首页简介文字，弱化一级但保持可读 */
+.home-info .entry-content {
+    color: var(--secondary);
+    line-height: 1.85;
+    letter-spacing: 0.02em;
+}
+
+/* 首页文章标题在悬停时也轻微渐变，强化整体色调 */
+.post-entry .entry-header h2 {
+    transition: color 0.18s ease;
+}
+
+.post-entry:hover .entry-header h2 {
+    background-image: linear-gradient(96deg, #0b6b5f, #4fa96b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+/* ---------- 移动端：固定背景在 iOS 上会抖，改为滚动 ---------- */
+@media (max-width: 768px) {
+    body {
+        background-attachment: scroll, scroll;
+        background-position: center top, center top;
+    }
+
+    .post-single {
+        padding: 22px 18px 26px;
+        border-radius: 12px;
+    }
+
+    .post-content {
+        font-size: 16px;
+        line-height: 1.9;
+    }
+
+    .post-title {
+        font-size: 1.62em;
+    }
+}
